@@ -15,8 +15,10 @@ open class Router<State: StateType>: StoreSubscriber {
 
     var store: Store<State>
     var lastNavigationState = NavigationState()
-    var routables: [Routable] = []
+    public var routables: [Routable] = []
     let waitForRoutingCompletionQueue = DispatchQueue(label: "WaitForRoutingCompletionQueue", attributes: [])
+
+    var routeToRpelace: (Route, [Routable])?
 
     public init(store: Store<State>, rootRoutable: Routable,  stateTransform: @escaping NavigationStateTransform) {
         self.store = store 
@@ -25,6 +27,10 @@ open class Router<State: StateType>: StoreSubscriber {
     }
 
     open func newState(state: NavigationState) {
+        if tryReplaceRoute(oldRoute: lastNavigationState.route, state: state) {
+            return
+        }
+
         let routingActions = Router.routingActionsForTransitionFrom(
             lastNavigationState.route, newRoute: state.route)
 
@@ -94,6 +100,22 @@ open class Router<State: StateType>: StoreSubscriber {
         }
 
         lastNavigationState = state
+    }
+
+    func tryReplaceRoute(oldRoute: Route, state: NavigationState) -> Bool {
+        guard let nextRoutables = state.nextRoutables else {
+            return false
+        }
+
+        if state.route.count + 1 != nextRoutables.count {
+            fatalError("route/routbles length mismatch")
+        }
+
+        self.routables = nextRoutables
+        self.lastNavigationState = state
+
+        self.store.dispatch(ClearNextRoutableAction())
+        return true
     }
 
     // MARK: Route Transformation Logic

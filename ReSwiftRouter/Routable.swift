@@ -9,7 +9,6 @@
 public typealias RoutingCompletionHandler = () -> Void
 
 public protocol Routable {
-
     func pushRouteSegment(
         _ routeElementIdentifier: RouteElementIdentifier,
         animated: Bool,
@@ -29,7 +28,6 @@ public protocol Routable {
 }
 
 extension Routable {
-
     public func pushRouteSegment(
         _ routeElementIdentifier: RouteElementIdentifier,
         animated: Bool,

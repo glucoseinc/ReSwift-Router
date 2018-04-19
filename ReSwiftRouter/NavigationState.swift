@@ -32,6 +32,7 @@ public struct NavigationState {
 
     public var route: Route = []
     public var routeSpecificState: [RouteHash: Any] = [:]
+    public var nextRoutables: [Routable]?
     var changeRouteAnimated: Bool = true
 }
 

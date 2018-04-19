@@ -47,3 +47,34 @@ public struct SetRouteSpecificData: Action {
         self.data = data
     }
 }
+
+public struct ReplaceRouteAction: StandardActionConvertible {
+
+    let route: Route
+    let routables: [Routable]
+    public static let type = "RE_SWIFT_ROUTER_REPLACE_ROUTE"
+
+    public init (_ route: Route, routables: [Routable]) {
+        if route.count + 1 != routables.count {
+            fatalError("invalid route/routable")
+        }
+        self.route = route
+        self.routables = routables
+    }
+
+    public init(_ action: StandardAction) {
+        self.route = action.payload!["route"] as! Route
+        self.routables = action.payload!["routable"] as! [Routable]
+    }
+
+    public func toStandardAction() -> StandardAction {
+        return StandardAction(
+            type: ReplaceRouteAction.type,
+            payload: ["route": route as AnyObject, "routables": routables as AnyObject],
+            isTypedAction: true
+        )
+    }
+}
+
+public struct ClearNextRoutableAction: Action {
+}

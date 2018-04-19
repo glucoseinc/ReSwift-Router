@@ -24,6 +24,10 @@ public struct NavigationReducer {
             return setRoute(state, setRouteAction: action)
         case let action as SetRouteSpecificData:
             return setRouteSpecificData(state, route: action.route, data: action.data)
+        case let action as ReplaceRouteAction:
+            return replaceRoute(state, replaceRouteAction: action)
+        case _ as ClearNextRoutableAction:
+            return clearNextRoutableAction(state)
         default:
             break
         }
@@ -53,4 +57,18 @@ public struct NavigationReducer {
             return state
     }
 
+    static func replaceRoute(_ state: NavigationState, replaceRouteAction: ReplaceRouteAction) -> NavigationState {
+        var state = state
+
+        state.route = replaceRouteAction.route
+        state.nextRoutables = replaceRouteAction.routables
+
+        return state
+    }
+
+    static func clearNextRoutableAction(_ state: NavigationState) -> NavigationState {
+        var state = state
+        state.nextRoutables = nil
+        return state
+    }
 }
